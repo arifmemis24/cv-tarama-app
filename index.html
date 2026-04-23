@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CV Tarama</title>
+
+<style>
+body {
+  font-family: Arial;
+  padding: 20px;
+  background: #f5f5f5;
+}
+.container {
+  max-width: 800px;
+  margin: auto;
+}
+.card {
+  background: white;
+  padding: 15px;
+  margin-bottom: 15px;
+  border-radius: 10px;
+}
+input, textarea {
+  width: 100%;
+  padding: 10px;
+  margin-top: 5px;
+}
+button {
+  padding: 10px;
+  margin-top: 10px;
+  cursor: pointer;
+}
+.result {
+  border: 1px solid #ddd;
+  padding: 10px;
+  margin-top: 10px;
+  border-radius: 8px;
+}
+</style>
+
+</head>
+<body>
+
+<div class="container">
+
+<h2>CV Tarama Uygulaması</h2>
+
+<div class="card">
+  <h3>Aday Ekle</h3>
+
+  <input id="name" placeholder="Aday adı">
+
+  <input id="position" placeholder="Pozisyon">
+
+  <textarea id="keywords" placeholder="Anahtar kelimeler (örn: yazılım, python, embedded)"></textarea>
+
+  <button onclick="addCandidate()">Kaydet</button>
+</div>
+
+<div class="card">
+  <h3>Arama</h3>
+
+  <input id="search" placeholder="örn: yazılım">
+
+  <button onclick="search()">Ara</button>
+</div>
+
+<div id="results"></div>
+
+</div>
+
+<script>
+
+let candidates = JSON.parse(localStorage.getItem("candidates") || "[]");
+
+function save() {
+  localStorage.setItem("candidates", JSON.stringify(candidates));
+}
+
+function addCandidate() {
+  let name = document.getElementById("name").value;
+  let position = document.getElementById("position").value;
+  let keywords = document.getElementById("keywords").value.toLowerCase();
+
+  candidates.push({name, position, keywords});
+  save();
+
+  alert("Kaydedildi");
+
+  document.getElementById("name").value = "";
+  document.getElementById("position").value = "";
+  document.getElementById("keywords").value = "";
+
+  render();
+}
+
+function search() {
+  let q = document.getElementById("search").value.toLowerCase();
+
+  let filtered = candidates.filter(c =>
+    c.keywords.includes(q) ||
+    c.position.toLowerCase().includes(q) ||
+    c.name.toLowerCase().includes(q)
+  );
+
+  render(filtered);
+}
+
+function render(list = candidates) {
+  let html = "";
+
+  list.forEach(c => {
+    html += `
+      <div class="result">
+        <b>${c.name}</b><br>
+        ${c.position}<br>
+        <small>${c.keywords}</small>
+      </div>
+    `;
+  });
+
+  document.getElementById("results").innerHTML = html;
+}
+
+render();
+
+</script>
+
+</body>
+</html>
